@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 16px;
+      background-color: #f5f5f5;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 600;
+    }
+    
+    .header p {
+      margin: 8px 0 0 0;
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    
+    .section {
+      background: white;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .section h2 {
+      margin: 0 0 12px 0;
+      font-size: 16px;
+      color: #333;
+      border-bottom: 2px solid #9C27B0;
+      padding-bottom: 8px;
+    }
+    
+    .template-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    
+    .template-card {
+      background: #f9f9f9;
+      padding: 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 2px solid transparent;
+    }
+    
+    .template-card:hover {
+      border-color: #9C27B0;
+      background: #F3E5F5;
+    }
+    
+    .template-name {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 4px;
+    }
+    
+    .template-desc {
+      font-size: 12px;
+      color: #666;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+    
+    .btn-primary {
+      background-color: #9C27B0;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: #7B1FA2;
+    }
+    
+    .btn-secondary {
+      background-color: #757575;
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background-color: #616161;
+    }
+    
+    .form-group {
+      margin-bottom: 16px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: #333;
+    }
+    
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    
+    .action-item-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .action-item {
+      padding: 12px;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+    
+    .action-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    
+    .action-item-desc {
+      font-weight: 500;
+      color: #333;
+    }
+    
+    .action-item-meta {
+      font-size: 12px;
+      color: #666;
+    }
+    
+    .status-badge {
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    
+    .status-pending {
+      background: #FFF3E0;
+      color: #FF9800;
+    }
+    
+    .status-completed {
+      background: #E8F5E9;
+      color: #4CAF50;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+    
+    .error {
+      background-color: #ffebee;
+      color: #c62828;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+    }
+    
+    .success {
+      background-color: #e8f5e9;
+      color: #2e7d32;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+    }
+    
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>📝 Meeting Mode Writer</h1>
+    <p>Create professional meeting documentation</p>
+  </div>
+
+  <div id="loading" class="loading">Loading...</div>
+  <div id="error" class="error hidden"></div>
+  <div id="success" class="success hidden"></div>
+
+  <div id="content" class="hidden">
+    <!-- Document Info -->
+    <div class="section">
+      <h2>📄 Document Info</h2>
+      <div id="doc-info">
+        <!-- Document info will be loaded here -->
+      </div>
+    </div>
+
+    <!-- Templates -->
+    <div class="section">
+      <h2>📋 Templates</h2>
+      <div class="template-grid" id="template-grid">
+        <!-- Templates will be loaded here -->
+      </div>
+    </div>
+
+    <!-- Quick Formatting -->
+    <div class="section">
+      <h2>✨ Quick Formatting</h2>
+      <button class="btn btn-primary" onclick="formatActionItem()">➕ Action Item</button>
+      <button class="btn btn-primary" onclick="formatDecision()">✓ Decision</button>
+      <button class="btn btn-primary" onclick="formatNote()">📝 Note</button>
+    </div>
+
+    <!-- AI Features -->
+    <div class="section">
+      <h2>🤖 AI Features</h2>
+      <button class="btn btn-primary" onclick="generateSummary()">📊 Generate Summary</button>
+      <button class="btn btn-secondary" onclick="getSuggestions()">💡 Get Suggestions</button>
+    </div>
+
+    <!-- Action Items -->
+    <div class="section">
+      <h2>✅ Action Items</h2>
+      <div class="form-group">
+        <label>New Action Item</label>
+        <input type="text" id="action-desc" placeholder="Description">
+        <input type="text" id="action-owner" placeholder="Owner" style="margin-top: 8px;">
+        <input type="date" id="action-due" style="margin-top: 8px;">
+        <button class="btn btn-primary" onclick="createActionItem()" style="margin-top: 8px;">Add Action Item</button>
+      </div>
+      <ul class="action-item-list" id="action-item-list">
+        <!-- Action items will be loaded here -->
+      </ul>
+    </div>
+
+    <!-- Export -->
+    <div class="section">
+      <h2>📤 Export</h2>
+      <button class="btn btn-primary" onclick="exportToPDF()">📄 Export to PDF</button>
+      <button class="btn btn-secondary" onclick="exportToEmail()">📧 Send as Email</button>
+    </div>
+  </div>
+
+  <script>
+    let templates = [];
+    let actionItems = [];
+
+    function loadDocumentInfo() {
+      google.script.run
+        .withSuccessHandler(function(info) {
+          document.getElementById('doc-info').innerHTML = `
+            <p><strong>Title:</strong> ${info.title}</p>
+            <p><strong>Words:</strong> ${info.wordCount}</p>
+            <p><strong>Paragraphs:</strong> ${info.paragraphCount}</p>
+          `;
+        })
+        .withFailureHandler(function(error) {
+          showError('Failed to load document info: ' + error.message);
+        })
+        .getDocumentInfo();
+    }
+
+    function loadTemplates() {
+      google.script.run
+        .withSuccessHandler(function(templatesData) {
+          templates = templatesData;
+          renderTemplates();
+        })
+        .withFailureHandler(function(error) {
+          showError('Failed to load templates: ' + error.message);
+        })
+        .call(function() {
+          return TemplateEngine.listTemplates();
+        });
+    }
+
+    function renderTemplates() {
+      const grid = document.getElementById('template-grid');
+      grid.innerHTML = '';
+      
+      templates.forEach(template => {
+        const card = document.createElement('div');
+        card.className = 'template-card';
+        card.onclick = () => applyTemplate(template.id);
+        card.innerHTML = `
+          <div class="template-name">${template.name}</div>
+          <div class="template-desc">Click to apply</div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function applyTemplate(templateId) {
+      showLoading('Applying template...');
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          hideLoading();
+          showSuccess('Template applied: ' + result.templateName);
+        })
+        .withFailureHandler(function(error) {
+          hideLoading();
+          showError('Failed to apply template: ' + error.message);
+        })
+        .applyTemplate(templateId);
+    }
+
+    function formatActionItem() {
+      const text = prompt('Enter action item:');
+      if (text) {
+        google.script.run
+          .withSuccessHandler(function(result) {
+            showSuccess('Action item formatted');
+          })
+          .withFailureHandler(function(error) {
+            showError('Failed to format: ' + error.message);
+          })
+          .formatAsActionItem(text);
+      }
+    }
+
+    function formatDecision() {
+      const text = prompt('Enter decision:');
+      if (text) {
+        google.script.run
+          .withSuccessHandler(function(result) {
+            showSuccess('Decision formatted');
+          })
+          .withFailureHandler(function(error) {
+            showError('Failed to format: ' + error.message);
+          })
+          .formatAsDecision(text);
+      }
+    }
+
+    function formatNote() {
+      const text = prompt('Enter note:');
+      if (text) {
+        google.script.run
+          .withSuccessHandler(function(result) {
+            showSuccess('Note formatted');
+          })
+          .withFailureHandler(function(error) {
+            showError('Failed to format: ' + error.message);
+          })
+          .formatAsNote(text);
+      }
+    }
+
+    function generateSummary() {
+      showLoading('Generating summary...');
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          hideLoading();
+          showSuccess('Summary generated');
+        })
+        .withFailureHandler(function(error) {
+          hideLoading();
+          showError('Failed to generate summary: ' + error.message);
+        })
+        .generateSummary();
+    }
+
+    function getSuggestions() {
+      google.script.run
+        .withSuccessHandler(function(suggestions) {
+          if (suggestions.length === 0) {
+            showSuccess('No suggestions - your document looks great!');
+          } else {
+            suggestions.forEach(s => {
+              showSuccess('💡 ' + s);
+            });
+          }
+        })
+        .withFailureHandler(function(error) {
+          showError('Failed to get suggestions: ' + error.message);
+        })
+        .call(function() {
+          return SuggestionEngine.suggestStructure('');
+        });
+    }
+
+    function createActionItem() {
+      const description = document.getElementById('action-desc').value;
+      const owner = document.getElementById('action-owner').value;
+      const dueDate = document.getElementById('action-due').value;
+      
+      if (!description) {
+        showError('Please enter a description');
+        return;
+      }
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          showSuccess('Action item created');
+          document.getElementById('action-desc').value = '';
+          document.getElementById('action-owner').value = '';
+          document.getElementById('action-due').value = '';
+          loadActionItems();
+        })
+        .withFailureHandler(function(error) {
+          showError('Failed to create action item: ' + error.message);
+        })
+        .createActionItem(description, owner, dueDate);
+    }
+
+    function loadActionItems() {
+      google.script.run
+        .withSuccessHandler(function(items) {
+          actionItems = items;
+          renderActionItems();
+        })
+        .withFailureHandler(function(error) {
+          showError('Failed to load action items: ' + error.message);
+        })
+        .call(function() {
+          return ActionItemTracker.listActionItems(DocumentApp.getActiveDocument().getId());
+        });
+    }
+
+    function renderActionItems() {
+      const list = document.getElementById('action-item-list');
+      list.innerHTML = '';
+      
+      if (actionItems.length === 0) {
+        list.innerHTML = '<li style="text-align:center; padding:12px; color:#999;">No action items yet</li>';
+        return;
+      }
+      
+      actionItems.forEach(item => {
+        const li = document.createElement('li');
+        li.className = 'action-item';
+        li.innerHTML = `
+          <div class="action-item-header">
+            <span class="action-item-desc">${item.description}</span>
+            <span class="status-badge status-${item.status}">${item.status}</span>
+          </div>
+          <div class="action-item-meta">
+            Owner: ${item.owner} | Due: ${item.dueDate}
+          </div>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+    function exportToPDF() {
+      showLoading('Exporting to PDF...');
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          hideLoading();
+          showSuccess('PDF exported! Opening...');
+          window.open(result.pdfUrl, '_blank');
+        })
+        .withFailureHandler(function(error) {
+          hideLoading();
+          showError('Failed to export: ' + error.message);
+        })
+        .exportToPDF();
+    }
+
+    function exportToEmail() {
+      showLoading('Sending email...');
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          hideLoading();
+          showSuccess('Email sent successfully!');
+        })
+        .withFailureHandler(function(error) {
+          hideLoading();
+          showError('Failed to send email: ' + error.message);
+        })
+        .exportToEmail();
+    }
+
+    function showLoading(message) {
+      document.getElementById('loading').textContent = message;
+      document.getElementById('loading').classList.remove('hidden');
+    }
+
+    function hideLoading() {
+      document.getElementById('loading').classList.add('hidden');
+    }
+
+    function showError(message) {
+      const errorDiv = document.getElementById('error');
+      errorDiv.textContent = message;
+      errorDiv.classList.remove('hidden');
+      setTimeout(() => errorDiv.classList.add('hidden'), 5000);
+    }
+
+    function showSuccess(message) {
+      const successDiv = document.getElementById('success');
+      successDiv.textContent = message;
+      successDiv.classList.remove('hidden');
+      setTimeout(() => successDiv.classList.add('hidden'), 3000);
+    }
+
+    // Initialize
+    loadDocumentInfo();
+    loadTemplates();
+    loadActionItems();
+  </script>
+</body>
+</html>
